@@ -1,14 +1,14 @@
 # Claude Profiles
 
-Troca entre múltiplas contas do Claude Code no macOS sem precisar fazer logout/login toda vez.
+Switch between multiple Claude Code accounts on macOS without logging out and back in every time.
 
-As credenciais ficam seguras no **Keychain do Mac** — nada é salvo em texto plano.
+Credentials are stored securely in the **Mac Keychain** — nothing saved in plain text.
 
-> **Requisito:** macOS com Claude Code instalado.
+> **Requirement:** macOS with Claude Code installed.
 
 ---
 
-## Instalação
+## Installation
 
 ```bash
 git clone https://github.com/seu-usuario/claude-profiles.git
@@ -20,46 +20,46 @@ source ~/.zshrc
 
 ---
 
-## Configuração inicial
+## Initial Setup
 
-Você precisa salvar cada perfil uma vez. Faça isso na ordem abaixo:
+You need to save each profile once. Follow the steps below:
 
-### 1. Salvar o perfil que já está logado
+### 1. Save the profile you are currently logged into
 
-Se você já está logado com uma conta (enterprise, por exemplo), salve agora:
+If you are already logged in with one account (e.g. enterprise), save it now:
 
 ```bash
 claude-salvar-enterprise
 ```
 
-### 2. Salvar o segundo perfil
+### 2. Save the second profile
 
-Abra o Claude Code e use `/logout` para sair da conta atual:
+Open Claude Code and use `/logout` to sign out:
 
 ```bash
-claude   # abre o Claude Code
-# dentro do Claude Code, digite:
+claude   # open Claude Code
+# inside Claude Code, type:
 /logout
-# saia com /exit, depois no shell:
-claude   # abre de novo e pede login
-# faça login com a conta pessoal, saia com /exit
+# exit with /exit, then in the shell:
+claude   # opens again and asks for login
+# log in with your personal account, exit with /exit
 claude-salvar-pessoal
 ```
 
-> **Dica:** nunca rode `claude logout` no shell — isso não existe. O logout é feito
-> com `/logout` dentro do Claude Code.
+> **Note:** never run `claude logout` in the shell — it does not exist. Logout is done
+> with `/logout` inside Claude Code.
 
 ---
 
-## Uso
+## Usage
 
 ```bash
-claude-pessoal        # ativa conta pessoal
-claude-enterprise     # ativa conta enterprise
-claude-perfil-ativo   # mostra qual está ativo
+claude-pessoal        # activate personal profile
+claude-enterprise     # activate enterprise profile
+claude-perfil-ativo   # show which profile is active
 ```
 
-Depois de ativar um perfil, abra o Claude Code normalmente:
+After activating a profile, open Claude Code normally:
 
 ```bash
 claude
@@ -67,67 +67,70 @@ claude
 
 ---
 
-## Como funciona
+## How it works
 
-O Claude Code armazena as credenciais de autenticação no Keychain do Mac com a chave `Claude Code-credentials`.
+Claude Code stores authentication credentials in the Mac Keychain under the key `Claude Code-credentials`.
 
-Este projeto cria cópias nomeadas dessas credenciais:
+This project creates named copies of those credentials:
 
-| Chave no Keychain | Descrição |
+| Keychain key | Description |
 |---|---|
-| `Claude Code-credentials` | Credencial ativa (lida pelo Claude Code) |
-| `Claude Code-credentials-pessoal` | Cópia do perfil pessoal |
-| `Claude Code-credentials-enterprise` | Cópia do perfil enterprise |
+| `Claude Code-credentials` | Active credential (read by Claude Code) |
+| `Claude Code-credentials-pessoal` | Saved personal profile |
+| `Claude Code-credentials-enterprise` | Saved enterprise profile |
 
-Ao rodar `claude-pessoal` ou `claude-enterprise`, o script copia a credencial correspondente para `Claude Code-credentials`, que é o que o Claude Code lê ao iniciar.
+Running `claude-pessoal` or `claude-enterprise` copies the corresponding credential into `Claude Code-credentials`, which is what Claude Code reads on startup.
 
 ---
 
-## Skill para Claude Code (opcional)
+## Skill for Claude Code (optional)
 
-Para que o próprio Claude Code entenda os comandos de perfil e possa responder perguntas como *"qual conta estou usando?"*, copie a skill para a pasta de skills:
+To let Claude Code understand profile commands and answer questions like *"which account am I using?"*, copy the skill to the skills folder:
 
 ```bash
 mkdir -p ~/.claude/skills/claude-profiles
 cp skill/SKILL.md ~/.claude/skills/claude-profiles/SKILL.md
 ```
 
-Depois disso, você pode perguntar ao Claude Code coisas como:
-- *"Qual perfil estou usando?"*
-- *"Como troco de conta?"*
+After that, you can ask Claude Code things like:
+- *"Which profile am I using?"*
+- *"How do I switch accounts?"*
 
 ---
 
-## Desinstalação
+## Uninstall
 
 ```bash
 ./uninstall.sh
 source ~/.zshrc
 ```
 
-As credenciais salvas no Keychain **não são apagadas** automaticamente. Para removê-las:
+Credentials saved in the Keychain are **not removed** automatically. To delete them:
 
 ```bash
 security delete-generic-password -s "Claude Code-credentials-pessoal" -a "$USER"
 security delete-generic-password -s "Claude Code-credentials-enterprise" -a "$USER"
+# Remove legacy email entries if they exist
+security delete-generic-password -s "Claude Code-email-pessoal" -a "$USER" 2>/dev/null
+security delete-generic-password -s "Claude Code-email-enterprise" -a "$USER" 2>/dev/null
 ```
 
 ---
 
-## Estrutura do projeto
+## Project structure
 
 ```
 claude-profiles/
-├── functions.zsh     # funções de shell (source pelo .zshrc)
-├── install.sh        # adiciona as funções ao .zshrc
-├── uninstall.sh      # remove as funções do .zshrc
+├── functions.zsh     # shell functions (sourced by .zshrc)
+├── install.sh        # adds functions to .zshrc
+├── uninstall.sh      # removes functions from .zshrc
 ├── skill/
-│   └── SKILL.md      # skill opcional para o Claude Code
+│   └── SKILL.md      # optional skill for Claude Code
 └── README.md
 ```
 
 ---
 
-## Licença
+## License
 
 MIT

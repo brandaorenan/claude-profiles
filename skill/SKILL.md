@@ -1,51 +1,51 @@
 ---
 name: claude-profiles
 description: >
-  Gerencia perfis de conta do Claude Code no macOS. Use esta skill quando o usuário
-  perguntar qual perfil está ativo, quiser trocar entre contas (pessoal/enterprise),
-  ou precisar salvar uma sessão como perfil. Palavras-chave: perfil, conta, login,
-  trocar conta, claude-pessoal, claude-enterprise, qual conta estou usando.
+  Manages Claude Code account profiles on macOS. Use this skill when the user
+  asks which profile is active, wants to switch between accounts (personal/enterprise),
+  or needs to save a session as a profile. Keywords: profile, account, login,
+  switch account, claude-pessoal, claude-enterprise, which account am I using.
 ---
 
-# Claude Profiles — Gerenciador de Contas
+# Claude Profiles — Account Manager
 
-Você é um assistente para gerenciar múltiplos perfis de conta do Claude Code no macOS.
-As credenciais ficam armazenadas no Keychain do Mac com as chaves:
-- `Claude Code-credentials` — credencial ativa atual
-- `Claude Code-credentials-pessoal` — perfil pessoal salvo
-- `Claude Code-credentials-enterprise` — perfil enterprise salvo
+You are an assistant for managing multiple Claude Code account profiles on macOS.
+Credentials are stored in the Mac Keychain under the following keys:
+- `Claude Code-credentials` — current active credential
+- `Claude Code-credentials-pessoal` — saved personal profile
+- `Claude Code-credentials-enterprise` — saved enterprise profile
 
-## Comandos disponíveis no shell
+## Available shell commands
 
-| Comando | O que faz |
+| Command | What it does |
 |---|---|
-| `claude-pessoal` | Ativa o perfil pessoal |
-| `claude-enterprise` | Ativa o perfil enterprise |
-| `claude-perfil-ativo` | Mostra qual perfil está ativo |
-| `claude-salvar-pessoal` | Salva a sessão atual como perfil pessoal |
-| `claude-salvar-enterprise` | Salva a sessão atual como perfil enterprise |
+| `claude-pessoal` | Activates the personal profile |
+| `claude-enterprise` | Activates the enterprise profile |
+| `claude-perfil-ativo` | Shows which profile is currently active |
+| `claude-salvar-pessoal` | Saves the current session as the personal profile |
+| `claude-salvar-enterprise` | Saves the current session as the enterprise profile |
 
-## Como responder ao usuário
+## How to respond to the user
 
-**"Qual perfil estou usando?"**
-Use a ferramenta Bash para comparar as credenciais do Keychain:
+**"Which profile am I using?"**
+Use the Bash tool to compare Keychain credentials:
 ```bash
 current=$(security find-generic-password -s "Claude Code-credentials" -a "$USER" -w 2>/dev/null)
 pessoal=$(security find-generic-password -s "Claude Code-credentials-pessoal" -a "$USER" -w 2>/dev/null)
 enterprise=$(security find-generic-password -s "Claude Code-credentials-enterprise" -a "$USER" -w 2>/dev/null)
-if [[ "$current" == "$pessoal" ]]; then echo "PESSOAL"
+if [[ "$current" == "$pessoal" ]]; then echo "PERSONAL"
 elif [[ "$current" == "$enterprise" ]]; then echo "ENTERPRISE"
-else echo "desconhecido"; fi
+else echo "unknown"; fi
 ```
 
-**"Troca para o perfil X"**
-Oriente o usuário a rodar no shell (fora do Claude Code):
+**"Switch to profile X"**
+Tell the user to run in the shell (outside Claude Code):
 ```bash
-claude-pessoal      # ou claude-enterprise
+claude-pessoal      # or claude-enterprise
 ```
 
-**Importante:** `claude logout` não funciona como comando de shell — o logout é feito
-com `/logout` dentro do Claude Code, ou deletando a credencial do Keychain:
+**Important:** `claude logout` does not work as a shell command — logout is done
+with `/logout` inside Claude Code, or by deleting the credential from the Keychain:
 ```bash
 security delete-generic-password -s "Claude Code-credentials" -a "$USER"
 ```
